@@ -1,6 +1,7 @@
 package com.builtbroken.bagableplants;
 
 import com.builtbroken.bagableplants.handler.InteractionHandler;
+import com.builtbroken.bagableplants.handler.VanillaHandler;
 import com.builtbroken.bagableplants.handler.atm.AppleTeaMilkHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
@@ -27,7 +28,7 @@ public class BagablePlants
 
     public static Item itemBag;
 
-    public static final HashMap<Block, InteractionHandler> blockNameToHandler = new HashMap();
+    public static final HashMap<Object, InteractionHandler> blockNameToHandler = new HashMap();
 
     /**
      * Called to register a block with a handler
@@ -41,6 +42,16 @@ public class BagablePlants
         if (block != null && handler != null)
         {
             blockNameToHandler.put(block, handler);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean register(Item item, InteractionHandler handler)
+    {
+        if (item != null && handler != null)
+        {
+            blockNameToHandler.put(item, handler);
             return true;
         }
         return false;
@@ -77,7 +88,8 @@ public class BagablePlants
     @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
-        if(Loader.isModLoaded("DCsAppleMilk"))
+        VanillaHandler.register();
+        if (Loader.isModLoaded("DCsAppleMilk"))
         {
             AppleTeaMilkHandler.register();
         }

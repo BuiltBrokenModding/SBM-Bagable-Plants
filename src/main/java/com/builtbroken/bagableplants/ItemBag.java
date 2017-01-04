@@ -5,6 +5,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -29,6 +30,7 @@ public class ItemBag extends Item
     {
         setUnlocalizedName("bagableplants:bag");
         setTextureName("bagableplants:bag");
+        setCreativeTab(CreativeTabs.tabTools);
     }
 
     @Override
@@ -68,6 +70,7 @@ public class ItemBag extends Item
                             {
                                 player.dropPlayerItemWithRandomChoice(result, false);
                             }
+                            player.inventoryContainer.detectAndSendChanges();
                         }
                         return true;
                     }
@@ -76,22 +79,58 @@ public class ItemBag extends Item
         }
         else
         {
+            if (side == 0)
+            {
+                --y;
+            }
+
+            if (side == 1)
+            {
+                ++y;
+            }
+
+            if (side == 2)
+            {
+                --z;
+            }
+
+            if (side == 3)
+            {
+                ++z;
+            }
+
+            if (side == 4)
+            {
+                --x;
+            }
+
+            if (side == 5)
+            {
+                ++x;
+            }
+
+            InteractionHandler handler = null;
             Block block = Block.getBlockFromItem(blockStack.getItem());
             if (block != null && block != Blocks.air)
             {
-                InteractionHandler handler = BagablePlants.blockNameToHandler.get(block);
-                if (handler != null && handler.canPlaceBlock(world, x, y, z, blockStack))
+                handler = BagablePlants.blockNameToHandler.get(block);
+            }
+            if (handler == null)
+            {
+                handler = BagablePlants.blockNameToHandler.get(blockStack.getItem());
+            }
+            if (handler != null && handler.canPlaceBlock(world, x, y, z, blockStack))
+            {
+                if (handler.placeBlock(world, x, y, z, blockStack, getBlockStackExtra(stack)))
                 {
-                    if (handler.placeBlock(world, x, y, z, blockStack))
+                    if (!world.isRemote && !player.capabilities.isCreativeMode)
                     {
-                        if (!world.isRemote && !player.capabilities.isCreativeMode)
-                        {
-                            player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(this));
-                        }
-                        return true;
+                        player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(this));
                     }
+                    return true;
                 }
             }
+
         }
         return false;
     }

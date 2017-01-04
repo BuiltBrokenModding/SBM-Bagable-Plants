@@ -69,7 +69,7 @@ public class AppleTeaMilkHandler extends InteractionHandler
     }
 
     @Override
-    public boolean placeBlock(World world, int x, int y, int z, ItemStack blockStack)
+    public boolean placeBlock(World world, int x, int y, int z, ItemStack blockStack, NBTTagCompound extra)
     {
         return false;
     }

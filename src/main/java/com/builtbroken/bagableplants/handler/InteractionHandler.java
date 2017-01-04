@@ -3,8 +3,8 @@ package com.builtbroken.bagableplants.handler;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -53,8 +53,13 @@ public class InteractionHandler
      */
     public boolean canPlaceBlock(World world, int x, int y, int z, ItemStack blockStack)
     {
+        Block placement = Block.getBlockFromItem(blockStack.getItem());
         Block block = world.getBlock(x, y - 1, z);
-        return block != Blocks.air && block.isSideSolid(world, x, y, z, ForgeDirection.UP);
+        if (block != Blocks.air)
+        {
+            return placement.canPlaceBlockAt(world, x, y, z);
+        }
+        return false;
     }
 
     /**
@@ -67,7 +72,7 @@ public class InteractionHandler
      * @param blockStack
      * @return true if the block was placed
      */
-    public boolean placeBlock(World world, int x, int y, int z, ItemStack blockStack)
+    public boolean placeBlock(World world, int x, int y, int z, ItemStack blockStack, NBTTagCompound extraTag)
     {
         return false;
     }
