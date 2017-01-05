@@ -1,10 +1,16 @@
 package com.builtbroken.bagableplants.handler;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -12,6 +18,23 @@ import net.minecraft.world.World;
  */
 public class InteractionHandler
 {
+    /**
+     * Adds information to the bag item about the contained plant
+     *
+     * @param stack  - the bag itself, check NBT for data
+     * @param player - the player holding (or contains in inventory) the bag
+     * @param list   - place to add information to
+     * @param b      - unknown
+     */
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, ItemStack blockStack, NBTTagCompound blockStackExtra, EntityPlayer player, List list, boolean b)
+    {
+        if (blockStack != null)
+        {
+            list.add(StatCollector.translateToLocal(blockStack.getUnlocalizedName() + ".name"));
+        }
+    }
+
     /**
      * Called to pickup the block and encode the data into the the bag stack
      *
@@ -49,9 +72,10 @@ public class InteractionHandler
      * @param y
      * @param z
      * @param blockStack
+     * @param blockStackExtra
      * @return
      */
-    public boolean canPlaceBlock(World world, int x, int y, int z, ItemStack blockStack)
+    public boolean canPlaceBlock(World world, int x, int y, int z, ItemStack blockStack, NBTTagCompound blockStackExtra)
     {
         Block placement = Block.getBlockFromItem(blockStack.getItem());
         Block block = world.getBlock(x, y - 1, z);

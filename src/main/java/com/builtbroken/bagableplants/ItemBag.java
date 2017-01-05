@@ -11,6 +11,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -40,7 +41,20 @@ public class ItemBag extends Item
         ItemStack blockStack = getBlockStack(stack);
         if (blockStack != null)
         {
-            list.add(StatCollector.translateToLocal(blockStack.getUnlocalizedName() + ".name"));
+            InteractionHandler handler = null;
+            Block block = Block.getBlockFromItem(blockStack.getItem());
+            if (block != null && block != Blocks.air)
+            {
+                handler = BagablePlants.blockNameToHandler.get(block);
+            }
+            if (handler == null)
+            {
+                handler = BagablePlants.blockNameToHandler.get(blockStack.getItem());
+            }
+            if (handler != null)
+            {
+                handler.addInformation(stack, blockStack, getBlockStackExtra(stack), player, list, b);
+            }
         }
     }
 
@@ -66,9 +80,13 @@ public class ItemBag extends Item
                             {
                                 player.inventory.setInventorySlotContents(player.inventory.currentItem, result);
                             }
-                            else if (!player.inventory.addItemStackToInventory(result))
+                            else
                             {
-                                player.dropPlayerItemWithRandomChoice(result, false);
+                                player.inventory.setInventorySlotContents(player.inventory.currentItem, copy);
+                                if (!player.inventory.addItemStackToInventory(result))
+                                {
+                                    player.dropPlayerItemWithRandomChoice(result, false);
+                                }
                             }
                             player.inventoryContainer.detectAndSendChanges();
                         }
@@ -119,16 +137,23 @@ public class ItemBag extends Item
             {
                 handler = BagablePlants.blockNameToHandler.get(blockStack.getItem());
             }
-            if (handler != null && handler.canPlaceBlock(world, x, y, z, blockStack))
+            if (handler != null)
             {
-                if (handler.placeBlock(world, x, y, z, blockStack, getBlockStackExtra(stack)))
+                if (handler.canPlaceBlock(world, x, y, z, blockStack, getBlockStackExtra(stack)))
                 {
-                    if (!world.isRemote && !player.capabilities.isCreativeMode)
+                    if (handler.placeBlock(world, x, y, z, blockStack, getBlockStackExtra(stack)))
                     {
-                        player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(this));
+                        if (!world.isRemote && !player.capabilities.isCreativeMode)
+                        {
+                            player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(this));
+                        }
                     }
-                    return true;
                 }
+                else if (!world.isRemote)
+                {
+                    player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocal(getUnlocalizedName() + ".cantPlace.name")));
+                }
+                return true;
             }
 
         }
