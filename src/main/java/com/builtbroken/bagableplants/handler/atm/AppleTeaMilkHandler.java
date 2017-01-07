@@ -109,13 +109,16 @@ public class AppleTeaMilkHandler extends InteractionHandler
         else if (block == cassisTree)
         {
             world.setBlock(x, y, z, cassisTree, blockStack.getItemDamage(), 3);
-            if (extra != null)
+            if (extra != null && !extra.hasNoTags())
             {
                 ItemStack stack = ItemStack.loadItemStackFromNBT(extra);
-                block = Block.getBlockFromItem(stack.getItem());
-                if (block == cassisTree)
+                if(stack != null)
                 {
-                    world.setBlock(x, y + 1, z, cassisTree, stack.getItemDamage(), 3);
+                    block = Block.getBlockFromItem(stack.getItem());
+                    if (block == cassisTree)
+                    {
+                        world.setBlock(x, y + 1, z, cassisTree, stack.getItemDamage(), 3);
+                    }
                 }
             }
             return true;
