@@ -5,3 +5,7 @@ CompiledWith.txt
 build/
 output/
 SBM-BagablePlants.txt
+
+*.ipr
+
+SBM-BagablePlants\.iws
