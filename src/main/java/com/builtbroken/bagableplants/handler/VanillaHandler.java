@@ -65,11 +65,11 @@ public class VanillaHandler extends InteractionHandler
         //Find bottom
         while (true)
         {
-            pos = start.down();
+            pos = pos.down();
             block = world.getBlockState(pos).getBlock();
             if (block != blockToMatch)
             {
-                pos = start.up();
+                pos = pos.up();
                 block = world.getBlockState(pos).getBlock();
                 break;
             }
@@ -80,7 +80,7 @@ public class VanillaHandler extends InteractionHandler
         {
             world.setBlockToAir(pos);
             count++;
-            pos = start.up();
+            pos = pos.up();
             block = world.getBlockState(pos).getBlock();
         }
         return count;
@@ -96,7 +96,7 @@ public class VanillaHandler extends InteractionHandler
             while (count > 0)
             {
                 world.setBlockState(pos, Blocks.reeds.getDefaultState());
-                pos = start.up();
+                pos = pos.up();
                 count--;
             }
             return true;
@@ -106,7 +106,7 @@ public class VanillaHandler extends InteractionHandler
             while (count > 0)
             {
                 world.setBlockState(pos, Blocks.cactus.getDefaultState());
-                pos = start.up();
+                pos = pos.up();
                 count--;
             }
             return true;
