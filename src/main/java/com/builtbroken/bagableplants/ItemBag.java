@@ -55,19 +55,19 @@ public class ItemBag extends Item
     }
 
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos clickPos, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         ItemStack blockStack = getBlockStack(stack);
         if (blockStack == null)
         {
-            Block block = world.getBlockState(pos).getBlock();
+            Block block = world.getBlockState(clickPos).getBlock();
             if (block != Blocks.air)
             {
                 InteractionHandler handler = BagablePlants.blockNameToHandler.get(block);
-                if (handler != null && handler.canPickupBlock(world, pos))
+                if (handler != null && handler.canPickupBlock(world, clickPos))
                 {
                     ItemStack copy = stack.copy();
-                    ItemStack result = handler.pickupBlock(world, pos, copy);
+                    ItemStack result = handler.pickupBlock(world, clickPos, copy);
                     if (result != null)
                     {
                         if (!world.isRemote)
@@ -93,6 +93,7 @@ public class ItemBag extends Item
         }
         else
         {
+            BlockPos pos = clickPos;
             if (side.ordinal() == 0)
             {
                 pos = pos.down();
@@ -124,7 +125,7 @@ public class ItemBag extends Item
             }
 
             InteractionHandler handler = null;
-            Block block = Block.getBlockFromItem(blockStack.getItem());
+            Block block = BagablePlants.getBlockFromItem(blockStack.getItem());
             if (block != null && block != Blocks.air)
             {
                 handler = BagablePlants.blockNameToHandler.get(block);
@@ -135,7 +136,7 @@ public class ItemBag extends Item
             }
             if (handler != null)
             {
-                if (handler.canPlaceBlock(world, pos, blockStack, getBlockStackExtra(stack)))
+                if (handler.canPlaceBlock(world, pos, block, blockStack, getBlockStackExtra(stack)))
                 {
                     if (handler.placeBlock(world, pos, blockStack, getBlockStackExtra(stack)))
                     {

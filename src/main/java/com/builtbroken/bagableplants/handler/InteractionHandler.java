@@ -66,11 +66,10 @@ public class InteractionHandler
      * @param blockStackExtra
      * @return
      */
-    public boolean canPlaceBlock(World world, BlockPos pos, ItemStack blockStack, NBTTagCompound blockStackExtra)
+    public boolean canPlaceBlock(World world, BlockPos pos, Block placement, ItemStack blockStack, NBTTagCompound blockStackExtra)
     {
-        Block placement = Block.getBlockFromItem(blockStack.getItem());
         BlockPos posDown = pos.down();
-        if (world.isAirBlock(posDown))
+        if (!world.isAirBlock(posDown))
         {
             return placement.canPlaceBlockAt(world, pos);
         }

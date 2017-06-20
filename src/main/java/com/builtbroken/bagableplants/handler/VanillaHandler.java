@@ -27,6 +27,7 @@ public class VanillaHandler extends InteractionHandler
         VanillaHandler handler = new VanillaHandler();
         BagablePlants.register(Blocks.reeds, handler);
         BagablePlants.register(Items.reeds, handler);
+        BagablePlants.itemToBlockMap.put(Items.reeds, Blocks.reeds);
         BagablePlants.register(Blocks.cactus, handler);
     }
 
@@ -114,9 +115,9 @@ public class VanillaHandler extends InteractionHandler
     }
 
     @Override
-    public boolean canPlaceBlock(World world, BlockPos pos, ItemStack blockStack, NBTTagCompound blockStackExtra)
+    public boolean canPlaceBlock(World world, BlockPos pos, Block placement, ItemStack blockStack, NBTTagCompound blockStackExtra)
     {
-        if (super.canPlaceBlock(world, pos, blockStack, blockStackExtra))
+        if (super.canPlaceBlock(world, pos, placement, blockStack, blockStackExtra))
         {
             Block block = Block.getBlockFromItem(blockStack.getItem());
 

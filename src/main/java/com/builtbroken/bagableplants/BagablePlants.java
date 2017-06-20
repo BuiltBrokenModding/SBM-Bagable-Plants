@@ -5,6 +5,7 @@ import com.builtbroken.bagableplants.handler.VanillaHandler;
 import net.minecraft.block.Block;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
@@ -35,7 +36,10 @@ public class BagablePlants
 
     public static Item itemBag;
 
+    /** Map of objects to handlers in minecraft */
     public static final HashMap<Object, InteractionHandler> blockNameToHandler = new HashMap();
+    /** Map of items to blocks, corrects for items that are not ItemBlocks (ex. reeds) */
+    public static final HashMap<Item, Block> itemToBlockMap = new HashMap();
 
     /**
      * Called to register a block with a handler
@@ -107,5 +111,14 @@ public class BagablePlants
     public void postInit(FMLPostInitializationEvent event)
     {
         GameRegistry.addShapedRecipe(new ItemStack(itemBag), "LSL", "LBL", " L ", 'L', Items.leather, 'B', Items.bowl, 'S', Items.string);
+    }
+
+    public static Block getBlockFromItem(Item item)
+    {
+        if (item instanceof ItemBlock)
+        {
+            return ((ItemBlock) item).getBlock();
+        }
+        return itemToBlockMap.get(item);
     }
 }
