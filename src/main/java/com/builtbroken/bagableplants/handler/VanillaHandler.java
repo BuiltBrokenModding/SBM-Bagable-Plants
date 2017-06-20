@@ -2,16 +2,17 @@ package com.builtbroken.bagableplants.handler;
 
 import com.builtbroken.bagableplants.BagablePlants;
 import com.builtbroken.bagableplants.ItemBag;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -30,15 +31,15 @@ public class VanillaHandler extends InteractionHandler
     }
 
     @Override
-    public ItemStack pickupBlock(World world, int x, int y, int z, ItemStack bagStack)
+    public ItemStack pickupBlock(World world, BlockPos pos, ItemStack bagStack)
     {
-        Block block = world.getBlock(x, y, z);
+        Block block = world.getBlockState(pos).getBlock();
         ItemStack stack = bagStack.copy();
         stack.stackSize = 1;
         if (block == Blocks.reeds)
         {
             NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setInteger("count", breakAndGetCount(world, x, y, z, Blocks.reeds));
+            nbt.setInteger("count", breakAndGetCount(world, pos, Blocks.reeds));
             ItemBag.encodeBlock(stack, new ItemStack(Items.reeds), nbt);
             bagStack.stackSize--;
             return stack;
@@ -46,7 +47,7 @@ public class VanillaHandler extends InteractionHandler
         else if (block == Blocks.cactus)
         {
             NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setInteger("count", breakAndGetCount(world, x, y, z, Blocks.cactus));
+            nbt.setInteger("count", breakAndGetCount(world, pos, Blocks.cactus));
             ItemBag.encodeBlock(stack, new ItemStack(Blocks.cactus), nbt);
             bagStack.stackSize--;
             return stack;
@@ -54,41 +55,47 @@ public class VanillaHandler extends InteractionHandler
         return bagStack;
     }
 
-    private int breakAndGetCount(World world, int x, int y, int z, Block blockToMatch)
+    private int breakAndGetCount(World world, final BlockPos start, Block blockToMatch)
     {
         int count = 0;
         Block block;
+        BlockPos pos = start;
+
+        //Find bottom
         while (true)
         {
-            y--;
-            block = world.getBlock(x, y, z);
+            pos = start.down();
+            block = world.getBlockState(pos).getBlock();
             if (block != blockToMatch)
             {
-                y++;
-                block = world.getBlock(x, y, z);
+                pos = start.up();
+                block = world.getBlockState(pos).getBlock();
                 break;
             }
         }
+
+        //Delete loop
         while (block == blockToMatch)
         {
-            world.setBlockToAir(x, y, z);
+            world.setBlockToAir(pos);
             count++;
-            y++;
-            block = world.getBlock(x, y, z);
+            pos = start.up();
+            block = world.getBlockState(pos).getBlock();
         }
         return count;
     }
 
     @Override
-    public boolean placeBlock(World world, int x, int y, int z, ItemStack blockStack, NBTTagCompound extra)
+    public boolean placeBlock(World world, BlockPos start, ItemStack blockStack, NBTTagCompound extra)
     {
+        BlockPos pos = start;
         int count = extra.getInteger("count");
         if (blockStack.getItem() == Items.reeds)
         {
             while (count > 0)
             {
-                world.setBlock(x, y, z, Blocks.reeds);
-                y++;
+                world.setBlockState(pos, Blocks.reeds.getDefaultState());
+                pos = start.up();
                 count--;
             }
             return true;
@@ -97,8 +104,8 @@ public class VanillaHandler extends InteractionHandler
         {
             while (count > 0)
             {
-                world.setBlock(x, y, z, Blocks.cactus);
-                y++;
+                world.setBlockState(pos, Blocks.cactus.getDefaultState());
+                pos = start.up();
                 count--;
             }
             return true;
@@ -107,9 +114,9 @@ public class VanillaHandler extends InteractionHandler
     }
 
     @Override
-    public boolean canPlaceBlock(World world, int x, int y, int z, ItemStack blockStack, NBTTagCompound blockStackExtra)
+    public boolean canPlaceBlock(World world, BlockPos pos, ItemStack blockStack, NBTTagCompound blockStackExtra)
     {
-        if (super.canPlaceBlock(world, x, y, z, blockStack, blockStackExtra))
+        if (super.canPlaceBlock(world, pos, blockStack, blockStackExtra))
         {
             Block block = Block.getBlockFromItem(blockStack.getItem());
 
@@ -118,8 +125,8 @@ public class VanillaHandler extends InteractionHandler
                 int count = blockStackExtra.getInteger("count");
                 while (count > 1)
                 {
-                    block = world.getBlock(x, y++, z);
-                    if (!block.isReplaceable(world, x, y, z))
+                    block = world.getBlockState(pos.up()).getBlock();
+                    if (!block.isReplaceable(world, pos))
                     {
                         return false;
                     }

@@ -1,20 +1,20 @@
 package com.builtbroken.bagableplants;
 
 import com.builtbroken.bagableplants.handler.InteractionHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -24,13 +24,9 @@ import java.util.List;
  */
 public class ItemBag extends Item
 {
-    @SideOnly(Side.CLIENT)
-    public IIcon filledIcon;
-
     public ItemBag()
     {
         setUnlocalizedName("bagableplants:bag");
-        setTextureName("bagableplants:bag");
         setCreativeTab(CreativeTabs.tabTools);
     }
 
@@ -59,19 +55,19 @@ public class ItemBag extends Item
     }
 
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float xx, float yy, float zz)
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         ItemStack blockStack = getBlockStack(stack);
         if (blockStack == null)
         {
-            Block block = world.getBlock(x, y, z);
+            Block block = world.getBlockState(pos).getBlock();
             if (block != Blocks.air)
             {
                 InteractionHandler handler = BagablePlants.blockNameToHandler.get(block);
-                if (handler != null && handler.canPickupBlock(world, x, y, z))
+                if (handler != null && handler.canPickupBlock(world, pos))
                 {
                     ItemStack copy = stack.copy();
-                    ItemStack result = handler.pickupBlock(world, x, y, z, copy);
+                    ItemStack result = handler.pickupBlock(world, pos, copy);
                     if (result != null)
                     {
                         if (!world.isRemote)
@@ -97,34 +93,34 @@ public class ItemBag extends Item
         }
         else
         {
-            if (side == 0)
+            if (side.ordinal() == 0)
             {
-                --y;
+                pos = pos.down();
             }
 
-            if (side == 1)
+            if (side.ordinal() == 1)
             {
-                ++y;
+                pos = pos.up();
             }
 
-            if (side == 2)
+            if (side.ordinal() == 2)
             {
-                --z;
+                pos = pos.north();
             }
 
-            if (side == 3)
+            if (side.ordinal() == 3)
             {
-                ++z;
+                pos = pos.south();
             }
 
-            if (side == 4)
+            if (side.ordinal() == 4)
             {
-                --x;
+                pos = pos.west();
             }
 
-            if (side == 5)
+            if (side.ordinal() == 5)
             {
-                ++x;
+                pos = pos.east();
             }
 
             InteractionHandler handler = null;
@@ -139,9 +135,9 @@ public class ItemBag extends Item
             }
             if (handler != null)
             {
-                if (handler.canPlaceBlock(world, x, y, z, blockStack, getBlockStackExtra(stack)))
+                if (handler.canPlaceBlock(world, pos, blockStack, getBlockStackExtra(stack)))
                 {
-                    if (handler.placeBlock(world, x, y, z, blockStack, getBlockStackExtra(stack)))
+                    if (handler.placeBlock(world, pos, blockStack, getBlockStackExtra(stack)))
                     {
                         if (!world.isRemote && !player.capabilities.isCreativeMode)
                         {
@@ -206,25 +202,6 @@ public class ItemBag extends Item
             return null;
         }
         return bag.getTagCompound().getCompoundTag("extra");
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void registerIcons(IIconRegister reg)
-    {
-        this.itemIcon = reg.registerIcon(this.getIconString());
-        this.filledIcon = reg.registerIcon(this.getIconString() + ".filled");
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IIcon getIconFromDamage(int meta)
-    {
-        if (meta == 1)
-        {
-            return this.filledIcon;
-        }
-        return this.itemIcon;
     }
 
     @Override

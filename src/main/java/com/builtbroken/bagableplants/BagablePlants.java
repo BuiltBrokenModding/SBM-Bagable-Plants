@@ -2,17 +2,18 @@ package com.builtbroken.bagableplants;
 
 import com.builtbroken.bagableplants.handler.InteractionHandler;
 import com.builtbroken.bagableplants.handler.VanillaHandler;
-import com.builtbroken.bagableplants.handler.atm.AppleTeaMilkHandler;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.util.HashMap;
 
@@ -28,6 +29,9 @@ public class BagablePlants
     public static final String REVISION_VERSION = "@REVIS@";
     public static final String BUILD_VERSION = "@BUILD@";
     public static final String VERSION = MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
+
+    @SidedProxy(modId = "bagableplants", serverSide = "com.builtbroken.bagableplants.CommonProxy", clientSide = "com.builtbroken.bagableplants.client.ClientProxy")
+    public static CommonProxy proxy;
 
     public static Item itemBag;
 
@@ -67,7 +71,7 @@ public class BagablePlants
      * @param handler - handler
      * @return true if registered
      */
-    public static boolean register(String name, InteractionHandler handler)
+    public static boolean register(ResourceLocation name, InteractionHandler handler)
     {
         if (name != null && handler != null)
         {
@@ -86,6 +90,7 @@ public class BagablePlants
     {
         itemBag = new ItemBag();
         GameRegistry.registerItem(itemBag, "bpPlantBag");
+        proxy.preInit();
     }
 
     @Mod.EventHandler
@@ -94,7 +99,7 @@ public class BagablePlants
         VanillaHandler.register();
         if (Loader.isModLoaded("DCsAppleMilk"))
         {
-            AppleTeaMilkHandler.register();
+            //AppleTeaMilkHandler.register();
         }
     }
 

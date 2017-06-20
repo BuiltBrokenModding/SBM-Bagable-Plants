@@ -1,14 +1,14 @@
 package com.builtbroken.bagableplants.handler;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -39,13 +39,10 @@ public class InteractionHandler
      * Called to pickup the block and encode the data into the the bag stack
      *
      * @param world
-     * @param x
-     * @param y
-     * @param z
      * @param bag   - stack of empty bags, reduce stack by 1
      * @return encoded bag
      */
-    public ItemStack pickupBlock(World world, int x, int y, int z, ItemStack bag)
+    public ItemStack pickupBlock(World world, BlockPos pos, ItemStack bag)
     {
         return bag;
     }
@@ -54,12 +51,9 @@ public class InteractionHandler
      * Can this handler pickup the block at the location
      *
      * @param world
-     * @param x
-     * @param y
-     * @param z
      * @return
      */
-    public boolean canPickupBlock(World world, int x, int y, int z)
+    public boolean canPickupBlock(World world, BlockPos pos)
     {
         return true;
     }
@@ -68,20 +62,17 @@ public class InteractionHandler
      * Can the block be placed at the location from the block stack
      *
      * @param world
-     * @param x
-     * @param y
-     * @param z
      * @param blockStack
      * @param blockStackExtra
      * @return
      */
-    public boolean canPlaceBlock(World world, int x, int y, int z, ItemStack blockStack, NBTTagCompound blockStackExtra)
+    public boolean canPlaceBlock(World world, BlockPos pos, ItemStack blockStack, NBTTagCompound blockStackExtra)
     {
         Block placement = Block.getBlockFromItem(blockStack.getItem());
-        Block block = world.getBlock(x, y - 1, z);
-        if (block != Blocks.air)
+        BlockPos posDown = pos.down();
+        if (world.isAirBlock(posDown))
         {
-            return placement.canPlaceBlockAt(world, x, y, z);
+            return placement.canPlaceBlockAt(world, pos);
         }
         return false;
     }
@@ -90,13 +81,10 @@ public class InteractionHandler
      * Called to place the block
      *
      * @param world
-     * @param x
-     * @param y
-     * @param z
      * @param blockStack
      * @return true if the block was placed
      */
-    public boolean placeBlock(World world, int x, int y, int z, ItemStack blockStack, NBTTagCompound extraTag)
+    public boolean placeBlock(World world, BlockPos pos, ItemStack blockStack, NBTTagCompound extraTag)
     {
         return false;
     }
