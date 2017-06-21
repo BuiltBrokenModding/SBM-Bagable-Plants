@@ -79,7 +79,7 @@ public class BagablePlants
     {
         if (name != null && handler != null)
         {
-            Block block = (Block) Block.blockRegistry.getObject(name);
+            Block block = (Block) Block.REGISTRY.getObject(name);
             if (block != null)
             {
                 blockNameToHandler.put(block, handler);
@@ -110,7 +110,7 @@ public class BagablePlants
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
-        GameRegistry.addShapedRecipe(new ItemStack(itemBag), "LSL", "LBL", " L ", 'L', Items.leather, 'B', Items.bowl, 'S', Items.string);
+        GameRegistry.addShapedRecipe(new ItemStack(itemBag), "LSL", "LBL", " L ", 'L', Items.LEATHER, 'B', Items.BOWL, 'S', Items.STRING);
     }
 
     public static Block getBlockFromItem(Item item)

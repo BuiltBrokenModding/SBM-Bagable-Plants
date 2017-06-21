@@ -4,8 +4,8 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -31,7 +31,7 @@ public class InteractionHandler
     {
         if (blockStack != null)
         {
-            list.add(StatCollector.translateToLocal(blockStack.getUnlocalizedName() + ".name"));
+            list.add(I18n.translateToLocal(blockStack.getUnlocalizedName() + ".name"));
         }
     }
 

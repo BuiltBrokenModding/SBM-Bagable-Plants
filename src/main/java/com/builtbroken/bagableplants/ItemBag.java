@@ -8,10 +8,11 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -27,7 +28,7 @@ public class ItemBag extends Item
     public ItemBag()
     {
         setUnlocalizedName("bagableplants:bag");
-        setCreativeTab(CreativeTabs.tabTools);
+        setCreativeTab(CreativeTabs.TOOLS);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class ItemBag extends Item
         {
             InteractionHandler handler = null;
             Block block = Block.getBlockFromItem(blockStack.getItem());
-            if (block != null && block != Blocks.air)
+            if (block != null && block != Blocks.AIR)
             {
                 handler = BagablePlants.blockNameToHandler.get(block);
             }
@@ -55,13 +56,13 @@ public class ItemBag extends Item
     }
 
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos clickPos, EnumFacing side, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos clickPos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         ItemStack blockStack = getBlockStack(stack);
         if (blockStack == null)
         {
             Block block = world.getBlockState(clickPos).getBlock();
-            if (block != Blocks.air)
+            if (block != Blocks.AIR)
             {
                 InteractionHandler handler = BagablePlants.blockNameToHandler.get(block);
                 if (handler != null && handler.canPickupBlock(world, clickPos))
@@ -81,12 +82,12 @@ public class ItemBag extends Item
                                 player.inventory.setInventorySlotContents(player.inventory.currentItem, copy);
                                 if (!player.inventory.addItemStackToInventory(result))
                                 {
-                                    player.dropPlayerItemWithRandomChoice(result, false);
+                                    player.dropItem(result, false);
                                 }
                             }
                             player.inventoryContainer.detectAndSendChanges();
                         }
-                        return true;
+                        return EnumActionResult.SUCCESS;
                     }
                 }
             }
@@ -126,7 +127,7 @@ public class ItemBag extends Item
 
             InteractionHandler handler = null;
             Block block = BagablePlants.getBlockFromItem(blockStack.getItem());
-            if (block != null && block != Blocks.air)
+            if (block != null && block != Blocks.AIR)
             {
                 handler = BagablePlants.blockNameToHandler.get(block);
             }
@@ -148,13 +149,13 @@ public class ItemBag extends Item
                 }
                 else if (!world.isRemote)
                 {
-                    player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocal(getUnlocalizedName() + ".cantPlace.name")));
+                    player.addChatComponentMessage(new TextComponentTranslation(getUnlocalizedName() + ".cantPlace.name"));
                 }
-                return true;
+                return EnumActionResult.SUCCESS;
             }
 
         }
-        return false;
+        return EnumActionResult.FAIL;
     }
 
     /**
