@@ -3,7 +3,7 @@ package com.builtbroken.bagableplants.handler;
 import com.builtbroken.bagableplants.BagablePlants;
 import com.builtbroken.bagableplants.ItemBag;
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -142,9 +142,9 @@ public class VanillaHandler extends InteractionHandler
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, ItemStack blockStack, NBTTagCompound blockStackExtra, EntityPlayer player, List list, boolean b)
+    public void addInformation(World world, ItemStack stack, ItemStack blockStack, NBTTagCompound blockStackExtra, List<String> list, ITooltipFlag flagIn)
     {
-        super.addInformation(stack, blockStack, blockStackExtra, player, list, b);
+        super.addInformation(world, stack, blockStack, blockStackExtra, list, flagIn);
         Block block = Block.getBlockFromItem(blockStack.getItem());
         if (block == Blocks.CACTUS || blockStack.getItem() == Items.REEDS)
         {

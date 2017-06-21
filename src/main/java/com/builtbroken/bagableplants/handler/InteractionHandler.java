@@ -1,7 +1,7 @@
 package com.builtbroken.bagableplants.handler;
 
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -22,12 +22,10 @@ public class InteractionHandler
      * Adds information to the bag item about the contained plant
      *
      * @param stack  - the bag itself, check NBT for data
-     * @param player - the player holding (or contains in inventory) the bag
      * @param list   - place to add information to
-     * @param b      - unknown
      */
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, ItemStack blockStack, NBTTagCompound blockStackExtra, EntityPlayer player, List list, boolean b)
+    public void addInformation(World world, ItemStack stack, ItemStack blockStack, NBTTagCompound blockStackExtra, List<String> list, ITooltipFlag flagIn)
     {
         if (blockStack != null)
         {

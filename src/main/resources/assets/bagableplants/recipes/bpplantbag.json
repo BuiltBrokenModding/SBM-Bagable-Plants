@@ -1,0 +1,25 @@
+{
+  "result": {
+    "item": "bagableplants:bpPlantBag"
+  },
+  "group": "bpplantbag",
+  "pattern": [
+    "LSL",
+    "LBL",
+    " L "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "B": {
+      "item": "minecraft:bowl"
+    },
+    "L": {
+      "type": "forge:ore_dict",
+      "ore": "leather"
+    },
+    "S": {
+      "type": "forge:ore_dict",
+      "ore": "string"
+    }
+  }
+}

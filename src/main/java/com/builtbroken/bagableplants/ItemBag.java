@@ -2,6 +2,7 @@ package com.builtbroken.bagableplants;
 
 import com.builtbroken.bagableplants.handler.InteractionHandler;
 import net.minecraft.block.Block;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -17,6 +18,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -27,14 +29,13 @@ public class ItemBag extends Item
 {
     public ItemBag()
     {
-        setHasSubtypes(true);
         setUnlocalizedName("bagableplants:bag");
         setCreativeTab(CreativeTabs.TOOLS);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b)
+    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flagIn)
     {
         ItemStack blockStack = getBlockStack(stack);
         if (blockStack != null)
@@ -51,7 +52,7 @@ public class ItemBag extends Item
             }
             if (handler != null)
             {
-                handler.addInformation(stack, blockStack, getBlockStackExtra(stack), player, list, b);
+                handler.addInformation(world, stack, blockStack, getBlockStackExtra(stack), list, flagIn);
             }
         }
     }

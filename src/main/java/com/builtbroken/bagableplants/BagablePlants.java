@@ -3,10 +3,8 @@ package com.builtbroken.bagableplants;
 import com.builtbroken.bagableplants.handler.InteractionHandler;
 import com.builtbroken.bagableplants.handler.VanillaHandler;
 import net.minecraft.block.Block;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -111,7 +109,6 @@ public class BagablePlants
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
-        GameRegistry.addShapedRecipe(new ItemStack(itemBag), "LSL", "LBL", " L ", 'L', Items.LEATHER, 'B', Items.BOWL, 'S', Items.STRING);
     }
 
     public static Block getBlockFromItem(Item item)
