@@ -27,6 +27,7 @@ public class ItemBag extends Item
 {
     public ItemBag()
     {
+        setHasSubtypes(true);
         setUnlocalizedName("bagableplants:bag");
         setCreativeTab(CreativeTabs.TOOLS);
     }
