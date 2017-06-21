@@ -36,13 +36,13 @@ public class VanillaHandler extends InteractionHandler
     {
         Block block = world.getBlockState(pos).getBlock();
         ItemStack stack = bagStack.copy();
-        stack.stackSize = 1;
+        stack.setCount(1);
         if (block == Blocks.REEDS)
         {
             NBTTagCompound nbt = new NBTTagCompound();
             nbt.setInteger("count", breakAndGetCount(world, pos, Blocks.REEDS));
             ItemBag.encodeBlock(stack, new ItemStack(Items.REEDS), nbt);
-            bagStack.stackSize--;
+            bagStack.setCount(bagStack.getCount() - 1);
             return stack;
         }
         else if (block == Blocks.CACTUS)
@@ -50,7 +50,7 @@ public class VanillaHandler extends InteractionHandler
             NBTTagCompound nbt = new NBTTagCompound();
             nbt.setInteger("count", breakAndGetCount(world, pos, Blocks.CACTUS));
             ItemBag.encodeBlock(stack, new ItemStack(Blocks.CACTUS), nbt);
-            bagStack.stackSize--;
+            bagStack.setCount(bagStack.getCount() - 1);
             return stack;
         }
         return bagStack;

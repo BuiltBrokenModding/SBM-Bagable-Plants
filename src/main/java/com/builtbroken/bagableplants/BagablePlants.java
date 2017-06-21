@@ -93,7 +93,7 @@ public class BagablePlants
     public void preInit(FMLPreInitializationEvent event)
     {
         itemBag = new ItemBag();
-        GameRegistry.registerItem(itemBag, "bpPlantBag");
+        GameRegistry.register(itemBag, new ResourceLocation("bagableplants", "bpPlantBag"));
         proxy.preInit();
     }
 

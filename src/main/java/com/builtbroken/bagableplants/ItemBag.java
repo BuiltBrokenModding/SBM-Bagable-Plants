@@ -56,8 +56,9 @@ public class ItemBag extends Item
     }
 
     @Override
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos clickPos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos clickPos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
+        ItemStack stack = player.getHeldItem(hand);
         ItemStack blockStack = getBlockStack(stack);
         if (blockStack == null)
         {
@@ -73,7 +74,7 @@ public class ItemBag extends Item
                     {
                         if (!world.isRemote)
                         {
-                            if (copy == null || copy.stackSize <= 0)
+                            if (copy == null || copy.getCount() <= 0)
                             {
                                 player.inventory.setInventorySlotContents(player.inventory.currentItem, result);
                             }
@@ -149,7 +150,7 @@ public class ItemBag extends Item
                 }
                 else if (!world.isRemote)
                 {
-                    player.addChatComponentMessage(new TextComponentTranslation(getUnlocalizedName() + ".cantPlace.name"));
+                    player.sendMessage(new TextComponentTranslation(getUnlocalizedName() + ".cantPlace.name"));
                 }
                 return EnumActionResult.SUCCESS;
             }
@@ -188,7 +189,7 @@ public class ItemBag extends Item
         {
             return null;
         }
-        return ItemStack.loadItemStackFromNBT(bag.getTagCompound().getCompoundTag("data"));
+        return new ItemStack(bag.getTagCompound().getCompoundTag("data"));
     }
 
     /**
