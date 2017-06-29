@@ -6,13 +6,15 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
 
@@ -21,6 +23,7 @@ import java.util.HashMap;
  * Created by Dark(DarkGuardsman, Robert) on 1/3/2017.
  */
 @Mod(modid = "bagableplants", name = "Bagable Plants", version = BagablePlants.VERSION)
+@Mod.EventBusSubscriber(modid = "bagableplants")
 public class BagablePlants
 {
     public static final String MAJOR_VERSION = "@MAJOR@";
@@ -87,12 +90,23 @@ public class BagablePlants
         return false;
     }
 
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event)
+    @SubscribeEvent
+    public static void registerItems(RegistryEvent.Register<Item> event)
     {
         itemBag = new ItemBag();
         itemBag.setRegistryName("bpPlantBag");
-        GameRegistry.register(itemBag);
+        event.getRegistry().register(itemBag);
+    }
+
+    @SubscribeEvent
+    public static void registerAllModels(ModelRegistryEvent event)
+    {
+        proxy.doLoadModels();
+    }
+
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent event)
+    {
         proxy.preInit();
     }
 

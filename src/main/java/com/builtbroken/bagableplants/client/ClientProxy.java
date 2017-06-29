@@ -15,6 +15,12 @@ public class ClientProxy extends CommonProxy
     public void preInit()
     {
         super.preInit();
+    }
+
+    @Override
+    public void doLoadModels()
+    {
+        super.doLoadModels();
         ModelLoader.setCustomModelResourceLocation(BagablePlants.itemBag, 0, new ModelResourceLocation(BagablePlants.itemBag.getRegistryName(), "inventory"));
         ModelLoader.setCustomModelResourceLocation(BagablePlants.itemBag, 1, new ModelResourceLocation(BagablePlants.itemBag.getRegistryName() + "_filled", "inventory"));
     }
