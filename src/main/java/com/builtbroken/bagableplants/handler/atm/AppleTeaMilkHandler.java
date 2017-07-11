@@ -15,6 +15,8 @@ import net.minecraft.world.World;
 import java.util.List;
 
 /**
+ * Handler for mod https://minecraft.curseforge.com/projects/applemilktea2
+ *
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/3/2017.
  */
@@ -54,7 +56,8 @@ public class AppleTeaMilkHandler extends InteractionHandler
             if (!world.isRemote)
             {
                 world.setBlockToAir(x, y, z);
-                bag.stackSize--;            }
+                bag.stackSize--;
+            }
 
             return reBag;
         }
@@ -112,7 +115,7 @@ public class AppleTeaMilkHandler extends InteractionHandler
             if (extra != null && !extra.hasNoTags())
             {
                 ItemStack stack = ItemStack.loadItemStackFromNBT(extra);
-                if(stack != null)
+                if (stack != null)
                 {
                     block = Block.getBlockFromItem(stack.getItem());
                     if (block == cassisTree)
