@@ -72,11 +72,7 @@ public class ItemBag extends Item
         ItemStack stack = player.getHeldItem(EnumHand.MAIN_HAND);
 
         if(stack.getItem() != BaggablePlants.filledBag && stack.getItem() != BaggablePlants.itemBag)
-        {
-            System.out.println(stack.getItem() == BaggablePlants.itemBag);
-            System.out.println(stack.getItem() == BaggablePlants.filledBag);
             return EnumActionResult.PASS;
-        }
 
         World world = ctx.getWorld();
         BlockPos clickPos = ctx.getPos();
