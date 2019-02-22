@@ -1,0 +1,5 @@
+{
+    "item.baggableplants.bag": "Sac à plantes",
+    "item.baggableplants.bag.cantPlace": "La plante ne peut pas prendre racine ici",
+    "item.baggableplants.bag.height": "%s blocs de haut"
+}

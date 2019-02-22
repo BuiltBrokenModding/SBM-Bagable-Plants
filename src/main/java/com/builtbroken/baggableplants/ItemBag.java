@@ -1,25 +1,29 @@
-package com.builtbroken.bagableplants;
+package com.builtbroken.baggableplants;
 
-import com.builtbroken.bagableplants.handler.InteractionHandler;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import com.builtbroken.baggableplants.handler.InteractionHandler;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nullable;
-import java.util.List;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -27,15 +31,18 @@ import java.util.List;
  */
 public class ItemBag extends Item
 {
-    public ItemBag()
+    public final boolean filled;
+
+    public ItemBag(boolean filled)
     {
-        setUnlocalizedName("bagableplants:bag");
-        setCreativeTab(CreativeTabs.TOOLS);
+        super(new Item.Properties().group(ItemGroup.TOOLS));
+        this.filled = filled;
+        setRegistryName(BaggablePlants.MODID + (filled ? ":filled_bag" : ":bag"));
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flagIn)
+    @OnlyIn(Dist.CLIENT)
+    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag flagIn)
     {
         ItemStack blockStack = getBlockStack(stack);
         if (blockStack != null)
@@ -44,11 +51,11 @@ public class ItemBag extends Item
             Block block = Block.getBlockFromItem(blockStack.getItem());
             if (block != null && block != Blocks.AIR)
             {
-                handler = BagablePlants.blockNameToHandler.get(block);
+                handler = BaggablePlants.blockNameToHandler.get(block);
             }
             if (handler == null)
             {
-                handler = BagablePlants.blockNameToHandler.get(blockStack.getItem());
+                handler = BaggablePlants.blockNameToHandler.get(blockStack.getItem());
             }
             if (handler != null)
             {
@@ -58,16 +65,29 @@ public class ItemBag extends Item
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos clickPos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(ItemUseContext ctx)
     {
-        ItemStack stack = player.getHeldItem(hand);
-        ItemStack blockStack = getBlockStack(stack);
-        if (blockStack == null)
+        EntityPlayer player = ctx.getPlayer();
+
+        ItemStack stack = player.getHeldItem(EnumHand.MAIN_HAND);
+
+        if(stack.getItem() != BaggablePlants.filledBag && stack.getItem() != BaggablePlants.itemBag)
+        {
+            System.out.println(stack.getItem() == BaggablePlants.itemBag);
+            System.out.println(stack.getItem() == BaggablePlants.filledBag);
+            return EnumActionResult.PASS;
+        }
+
+        World world = ctx.getWorld();
+        BlockPos clickPos = ctx.getPos();
+        EnumFacing side = ctx.getFace();
+
+        if (!filled)
         {
             Block block = world.getBlockState(clickPos).getBlock();
             if (block != Blocks.AIR)
             {
-                InteractionHandler handler = BagablePlants.blockNameToHandler.get(block);
+                InteractionHandler handler = BaggablePlants.blockNameToHandler.get(block);
                 if (handler != null && handler.canPickupBlock(world, clickPos))
                 {
                     ItemStack copy = stack.copy();
@@ -97,6 +117,7 @@ public class ItemBag extends Item
         }
         else
         {
+            ItemStack blockStack = getBlockStack(stack);
             BlockPos pos = clickPos;
             if (side.ordinal() == 0)
             {
@@ -127,16 +148,15 @@ public class ItemBag extends Item
             {
                 pos = pos.east();
             }
-
             InteractionHandler handler = null;
-            Block block = BagablePlants.getBlockFromItem(blockStack.getItem());
+            Block block = BaggablePlants.getBlockFromItem(blockStack.getItem());
             if (block != null && block != Blocks.AIR)
             {
-                handler = BagablePlants.blockNameToHandler.get(block);
+                handler = BaggablePlants.blockNameToHandler.get(block);
             }
             if (handler == null)
             {
-                handler = BagablePlants.blockNameToHandler.get(blockStack.getItem());
+                handler = BaggablePlants.blockNameToHandler.get(blockStack.getItem());
             }
             if (handler != null)
             {
@@ -144,15 +164,15 @@ public class ItemBag extends Item
                 {
                     if (handler.placeBlock(world, pos, blockStack, getBlockStackExtra(stack)))
                     {
-                        if (!world.isRemote && !player.capabilities.isCreativeMode)
+                        if (!world.isRemote && !player.isCreative())
                         {
-                            player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(this));
+                            player.inventory.setInventorySlotContents(player.inventory.currentItem, new ItemStack(BaggablePlants.itemBag));
                         }
                     }
                 }
                 else if (!world.isRemote)
                 {
-                    player.sendMessage(new TextComponentTranslation(getUnlocalizedName() + ".cantPlace.name"));
+                    player.sendMessage(new TextComponentTranslation(BaggablePlants.itemBag.getTranslationKey() + ".cantPlace"));
                 }
                 return EnumActionResult.SUCCESS;
             }
@@ -170,13 +190,12 @@ public class ItemBag extends Item
      */
     public static void encodeBlock(ItemStack bag, ItemStack block, NBTTagCompound extra)
     {
-        if (bag.getTagCompound() == null)
+        if (bag.getTag() == null)
         {
-            bag.setTagCompound(new NBTTagCompound());
+            bag.setTag(new NBTTagCompound());
         }
-        bag.getTagCompound().setTag("data", block.writeToNBT(new NBTTagCompound()));
-        bag.getTagCompound().setTag("extra", extra);
-        bag.setItemDamage(1); //Meta is used to set the icon
+        bag.getTag().put("data", block.write(new NBTTagCompound()));
+        bag.getTag().put("extra", extra);
     }
 
     /**
@@ -187,11 +206,11 @@ public class ItemBag extends Item
      */
     public static ItemStack getBlockStack(ItemStack bag)
     {
-        if (bag.getTagCompound() == null || !bag.getTagCompound().hasKey("data"))
+        if (bag.getTag() == null || !bag.getTag().contains("data"))
         {
             return null;
         }
-        return new ItemStack(bag.getTagCompound().getCompoundTag("data"));
+        return ItemStack.read(bag.getTag().getCompound("data"));
     }
 
     /**
@@ -202,17 +221,17 @@ public class ItemBag extends Item
      */
     public static NBTTagCompound getBlockStackExtra(ItemStack bag)
     {
-        if (bag.getTagCompound() == null || !bag.getTagCompound().hasKey("data"))
+        if (bag.getTag() == null || !bag.getTag().contains("data"))
         {
             return null;
         }
-        return bag.getTagCompound().getCompoundTag("extra");
+        return bag.getTag().getCompound("extra");
     }
 
     @Override
     public int getItemStackLimit(ItemStack stack)
     {
-        if (stack.getTagCompound() != null)
+        if (stack.getTag() != null)
         {
             return 1;
         }

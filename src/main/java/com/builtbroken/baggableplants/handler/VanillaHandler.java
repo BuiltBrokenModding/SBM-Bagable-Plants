@@ -1,20 +1,23 @@
-package com.builtbroken.bagableplants.handler;
+package com.builtbroken.baggableplants.handler;
 
-import com.builtbroken.bagableplants.BagablePlants;
-import com.builtbroken.bagableplants.ItemBag;
+import java.util.List;
+
+import com.builtbroken.baggableplants.BaggablePlants;
+import com.builtbroken.baggableplants.ItemBag;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -25,30 +28,30 @@ public class VanillaHandler extends InteractionHandler
     public static void register()
     {
         VanillaHandler handler = new VanillaHandler();
-        BagablePlants.register(Blocks.REEDS, handler);
-        BagablePlants.register(Items.REEDS, handler);
-        BagablePlants.itemToBlockMap.put(Items.REEDS, Blocks.REEDS);
-        BagablePlants.register(Blocks.CACTUS, handler);
+        BaggablePlants.register(Blocks.SUGAR_CANE, handler);
+        BaggablePlants.register(Blocks.SUGAR_CANE.asItem(), handler);
+        BaggablePlants.itemToBlockMap.put(Blocks.SUGAR_CANE.asItem(), Blocks.SUGAR_CANE);
+        BaggablePlants.register(Blocks.CACTUS, handler);
     }
 
     @Override
     public ItemStack pickupBlock(World world, BlockPos pos, ItemStack bagStack)
     {
         Block block = world.getBlockState(pos).getBlock();
-        ItemStack stack = bagStack.copy();
+        ItemStack stack = new ItemStack(BaggablePlants.filledBag);
         stack.setCount(1);
-        if (block == Blocks.REEDS)
+        if (block == Blocks.SUGAR_CANE)
         {
             NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setInteger("count", breakAndGetCount(world, pos, Blocks.REEDS));
-            ItemBag.encodeBlock(stack, new ItemStack(Items.REEDS), nbt);
+            nbt.putInt("count", breakAndGetCount(world, pos, Blocks.SUGAR_CANE));
+            ItemBag.encodeBlock(stack, new ItemStack(Blocks.SUGAR_CANE.asItem()), nbt);
             bagStack.setCount(bagStack.getCount() - 1);
             return stack;
         }
         else if (block == Blocks.CACTUS)
         {
             NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setInteger("count", breakAndGetCount(world, pos, Blocks.CACTUS));
+            nbt.putInt("count", breakAndGetCount(world, pos, Blocks.CACTUS));
             ItemBag.encodeBlock(stack, new ItemStack(Blocks.CACTUS), nbt);
             bagStack.setCount(bagStack.getCount() - 1);
             return stack;
@@ -58,31 +61,26 @@ public class VanillaHandler extends InteractionHandler
 
     private int breakAndGetCount(World world, final BlockPos start, Block blockToMatch)
     {
-        int count = 0;
-        Block block;
+        int count = 1; //already count top block
         BlockPos pos = start;
 
-        //Find bottom
-        while (true)
+        //find top
+        while(world.getBlockState(pos.up()).getBlock() == blockToMatch)
         {
-            pos = pos.down();
-            block = world.getBlockState(pos).getBlock();
-            if (block != blockToMatch)
-            {
-                pos = pos.up();
-                block = world.getBlockState(pos).getBlock();
-                break;
-            }
+            pos = pos.up();
         }
 
-        //Delete loop
-        while (block == blockToMatch)
+        //delete top block
+        world.removeBlock(pos);
+
+        //count and delete
+        while(world.getBlockState(pos.down()).getBlock() == blockToMatch)
         {
-            world.setBlockToAir(pos);
             count++;
-            pos = pos.up();
-            block = world.getBlockState(pos).getBlock();
+            pos = pos.down();
+            world.removeBlock(pos);
         }
+
         return count;
     }
 
@@ -90,12 +88,12 @@ public class VanillaHandler extends InteractionHandler
     public boolean placeBlock(World world, BlockPos start, ItemStack blockStack, NBTTagCompound extra)
     {
         BlockPos pos = start;
-        int count = extra.getInteger("count");
-        if (blockStack.getItem() == Items.REEDS)
+        int count = extra.getInt("count");
+        if (blockStack.getItem() == Blocks.SUGAR_CANE.asItem())
         {
             while (count > 0)
             {
-                world.setBlockState(pos, Blocks.REEDS.getDefaultState());
+                world.setBlockState(pos, Blocks.SUGAR_CANE.getDefaultState());
                 pos = pos.up();
                 count--;
             }
@@ -121,13 +119,13 @@ public class VanillaHandler extends InteractionHandler
         {
             Block block = Block.getBlockFromItem(blockStack.getItem());
 
-            if (block == Blocks.CACTUS || blockStack.getItem() == Items.REEDS)
+            if (block == Blocks.CACTUS || blockStack.getItem() == Blocks.SUGAR_CANE.asItem())
             {
-                int count = blockStackExtra.getInteger("count");
+                int count = blockStackExtra.getInt("count");
                 while (count > 1)
                 {
                     block = world.getBlockState(pos.up()).getBlock();
-                    if (!block.isReplaceable(world, pos))
+                    if (!block.isReplaceable(world.getBlockState(pos), new BlockItemUseContext(world, null, blockStack, pos, EnumFacing.UP, 0, 0, 0)))
                     {
                         return false;
                     }
@@ -141,15 +139,15 @@ public class VanillaHandler extends InteractionHandler
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void addInformation(World world, ItemStack stack, ItemStack blockStack, NBTTagCompound blockStackExtra, List<String> list, ITooltipFlag flagIn)
+    @OnlyIn(Dist.CLIENT)
+    public void addInformation(World world, ItemStack stack, ItemStack blockStack, NBTTagCompound blockStackExtra, List<ITextComponent> list, ITooltipFlag flagIn)
     {
         super.addInformation(world, stack, blockStack, blockStackExtra, list, flagIn);
         Block block = Block.getBlockFromItem(blockStack.getItem());
-        if (block == Blocks.CACTUS || blockStack.getItem() == Items.REEDS)
+        if (block == Blocks.CACTUS || blockStack.getItem() == Blocks.SUGAR_CANE.asItem())
         {
-            int count = blockStackExtra.getInteger("count");
-            list.add(I18n.translateToLocal("item.bagableplants:bag.height.name").replace("%1", "" + count));
+            int count = blockStackExtra.getInt("count");
+            list.add(new TextComponentTranslation(BaggablePlants.itemBag.getTranslationKey() + ".height", count));
         }
     }
 }

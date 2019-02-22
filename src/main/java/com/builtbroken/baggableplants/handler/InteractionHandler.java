@@ -1,16 +1,17 @@
-package com.builtbroken.bagableplants.handler;
+package com.builtbroken.baggableplants.handler;
+
+import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -24,12 +25,12 @@ public class InteractionHandler
      * @param stack  - the bag itself, check NBT for data
      * @param list   - place to add information to
      */
-    @SideOnly(Side.CLIENT)
-    public void addInformation(World world, ItemStack stack, ItemStack blockStack, NBTTagCompound blockStackExtra, List<String> list, ITooltipFlag flagIn)
+    @OnlyIn(Dist.CLIENT)
+    public void addInformation(World world, ItemStack stack, ItemStack blockStack, NBTTagCompound blockStackExtra, List<ITextComponent> list, ITooltipFlag flagIn)
     {
         if (blockStack != null)
         {
-            list.add(I18n.translateToLocal(blockStack.getUnlocalizedName() + ".name"));
+            list.add(new TextComponentTranslation(blockStack.getTranslationKey()));
         }
     }
 
@@ -69,7 +70,7 @@ public class InteractionHandler
         BlockPos posDown = pos.down();
         if (!world.isAirBlock(posDown))
         {
-            return placement.canPlaceBlockAt(world, pos);
+            return placement.isValidPosition(world.getBlockState(pos), world, pos);
         }
         return false;
     }

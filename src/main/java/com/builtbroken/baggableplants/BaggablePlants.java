@@ -1,46 +1,52 @@
-package com.builtbroken.bagableplants;
+package com.builtbroken.baggableplants;
 
-import com.builtbroken.bagableplants.handler.InteractionHandler;
-import com.builtbroken.bagableplants.handler.VanillaHandler;
+import java.util.HashMap;
+
+import com.builtbroken.baggableplants.handler.InteractionHandler;
+import com.builtbroken.baggableplants.handler.VanillaHandler;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import java.util.HashMap;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ObjectHolder;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 1/3/2017.
  */
-@Mod(modid = "bagableplants", name = "Bagable Plants", version = BagablePlants.VERSION)
-@Mod.EventBusSubscriber(modid = "bagableplants")
-public class BagablePlants
+@Mod(BaggablePlants.MODID)
+@Mod.EventBusSubscriber(bus=Bus.MOD)
+public class BaggablePlants
 {
     public static final String MAJOR_VERSION = "@MAJOR@";
     public static final String MINOR_VERSION = "@MINOR@";
     public static final String REVISION_VERSION = "@REVIS@";
     public static final String BUILD_VERSION = "@BUILD@";
     public static final String VERSION = MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
+    public static final String MODID = "baggableplants";
 
-    @SidedProxy(modId = "bagableplants", serverSide = "com.builtbroken.bagableplants.CommonProxy", clientSide = "com.builtbroken.bagableplants.client.ClientProxy")
-    public static CommonProxy proxy;
-
+    @ObjectHolder(MODID + ":bag")
     public static Item itemBag;
+    @ObjectHolder(MODID + ":filled_bag")
+    public static Item filledBag;
 
     /** Map of objects to handlers in minecraft */
-    public static final HashMap<Object, InteractionHandler> blockNameToHandler = new HashMap();
+    public static final HashMap<Object, InteractionHandler> blockNameToHandler = new HashMap<>();
     /** Map of items to blocks, corrects for items that are not ItemBlocks (ex. reeds) */
-    public static final HashMap<Item, Block> itemToBlockMap = new HashMap();
+    public static final HashMap<Item, Block> itemToBlockMap = new HashMap<>();
+
+    public BaggablePlants()
+    {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::postInit);
+    }
 
     /**
      * Called to register a block with a handler
@@ -80,7 +86,7 @@ public class BagablePlants
     {
         if (name != null && handler != null)
         {
-            Block block = (Block) Block.REGISTRY.getObject(name);
+            Block block = ForgeRegistries.BLOCKS.getValue(name);
             if (block != null)
             {
                 blockNameToHandler.put(block, handler);
@@ -93,36 +99,13 @@ public class BagablePlants
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
-        itemBag = new ItemBag();
-        itemBag.setRegistryName("bpPlantBag");
-        event.getRegistry().register(itemBag);
+        event.getRegistry().register(new ItemBag(false));
+        event.getRegistry().register(new ItemBag(true));
     }
 
-    @SubscribeEvent
-    public static void registerAllModels(ModelRegistryEvent event)
-    {
-        proxy.doLoadModels();
-    }
-
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event)
-    {
-        proxy.preInit();
-    }
-
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event)
+    public void postInit(InterModProcessEvent event)
     {
         VanillaHandler.register();
-        if (Loader.isModLoaded("DCsAppleMilk"))
-        {
-            //AppleTeaMilkHandler.register();
-        }
-    }
-
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
     }
 
     public static Block getBlockFromItem(Item item)

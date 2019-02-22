@@ -1,0 +1,22 @@
+{
+  "result": {
+    "item": "baggableplants:bag"
+  },
+  "pattern": [
+    "LSL",
+    "LBL",
+    " L "
+  ],
+  "type": "crafting_shaped",
+  "key": {
+    "B": {
+      "item": "minecraft:bowl"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "S": {
+      "item": "minecraft:string"
+    }
+  }
+}

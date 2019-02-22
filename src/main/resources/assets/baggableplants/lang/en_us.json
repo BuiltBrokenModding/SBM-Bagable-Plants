@@ -1,0 +1,6 @@
+{
+    "item.baggableplants.bag": "Plant Bag",
+    "item.baggableplants.filled_bag": "Filled Plant Bag",
+    "item.baggableplants.bag.cantPlace": "Plant can't take root here",
+    "item.baggableplants.bag.height": "%s blocks tall"
+}

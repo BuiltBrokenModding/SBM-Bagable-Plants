@@ -1,0 +1,6 @@
+{
+    "item.baggableplants.bag": "Pflanzensack",
+    "item.baggableplants.filled_bag": "Gefüllter Pflanzensack",
+    "item.baggableplants.bag.cantPlace": "Pflanze kann hier keine Wurzeln schlagen",
+    "item.baggableplants.bag.height": "%s Blöcke hoch"
+}
