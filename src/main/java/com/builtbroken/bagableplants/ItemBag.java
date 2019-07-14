@@ -152,7 +152,7 @@ public class ItemBag extends Item
                 }
                 else if (!world.isRemote)
                 {
-                    player.sendMessage(new TextComponentTranslation(getUnlocalizedName() + ".cantPlace.name"));
+                    player.sendMessage(new TextComponentTranslation(getTranslationKey() + ".cantPlace.name"));
                 }
                 return EnumActionResult.SUCCESS;
             }
