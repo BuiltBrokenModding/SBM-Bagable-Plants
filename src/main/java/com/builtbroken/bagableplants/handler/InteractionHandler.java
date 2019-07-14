@@ -29,7 +29,7 @@ public class InteractionHandler
     {
         if (blockStack != null)
         {
-            list.add(I18n.translateToLocal(blockStack.getUnlocalizedName() + ".name"));
+            list.add(I18n.translateToLocal(blockStack.getTranslationKey() + ".name"));
         }
     }
 
