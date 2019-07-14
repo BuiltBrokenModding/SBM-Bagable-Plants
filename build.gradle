@@ -21,6 +21,7 @@ plugins {
   id 'net.saliman.cobertura' version '2.2.5'
   id 'com.github.kt3k.coveralls' version '2.0.1'
   id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.45"
+  id "org.ajoberstar.grgit" version "2.1.0"
 }
 
 apply from: 'https://raw.githubusercontent.com/BuiltBrokenModding/BuiltBrokenScripts/1.12.2/index/index.gradle'
