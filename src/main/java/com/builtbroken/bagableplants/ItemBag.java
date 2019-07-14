@@ -29,7 +29,7 @@ public class ItemBag extends Item
 {
     public ItemBag()
     {
-        setUnlocalizedName("bagableplants:bag");
+        setTranslationKey("bagableplants:bag");
         setCreativeTab(CreativeTabs.TOOLS);
     }
 
