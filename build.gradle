@@ -53,20 +53,20 @@ jar {
             "Git-Hash": project.GitHash)
 }
 
-//deobfJar {
-//     manifest.mainAttributes(
-//            "Built-By": System.getProperty('user.name'),
-//            "Created-By": project.CurrentJVM,
-//            "Implementation-Title": archivesBaseName,
-//            "Implementation-Version": project.version,
-//            "Git-Hash": project.GitHash)
-//}
-//
-//sourcesJar {
-//     manifest.mainAttributes(
-//            "Built-By": System.getProperty('user.name'),
-//            "Created-By": project.CurrentJVM,
-//            "Implementation-Title": archivesBaseName,
-//            "Implementation-Version": project.version,
-//            "Git-Hash": project.GitHash)
-//}
+deobfJar {
+     manifest.mainAttributes(
+            "Built-By": System.getProperty('user.name'),
+            "Created-By": project.CurrentJVM,
+            "Implementation-Title": archivesBaseName,
+            "Implementation-Version": project.version,
+            "Git-Hash": project.GitHash)
+}
+
+sourcesJar {
+     manifest.mainAttributes(
+            "Built-By": System.getProperty('user.name'),
+            "Created-By": project.CurrentJVM,
+            "Implementation-Title": archivesBaseName,
+            "Implementation-Version": project.version,
+            "Git-Hash": project.GitHash)
+}
